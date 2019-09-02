@@ -41,6 +41,7 @@ namespace Elastic.Apm.Config
 			public const string TransactionSampleRate = Prefix + "TRANSACTION_SAMPLE_RATE";
 			public const string CaptureBody = Prefix + "CAPTURE_BODY";
 			public const string CaptureBodyContentTypes = Prefix + "CAPTURE_BODY_CONTENT_TYPES";
+			public const string VerifyServerCert = Prefix + "VERIFY_SERVER_CERT";
 		}
 
 		public static class SupportedValues

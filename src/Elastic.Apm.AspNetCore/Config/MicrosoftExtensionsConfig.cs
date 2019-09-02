@@ -29,6 +29,7 @@ namespace Elastic.Apm.AspNetCore.Config
 			internal const string SpanFramesMinDuration = "ElasticApm:SpanFramesMinDuration";
 			internal const string StackTraceLimit = "ElasticApm:StackTraceLimit";
 			internal const string CaptureBodyContentTypes = "ElasticApm:CaptureBodyContentTypes";
+			internal const string VerifyServerCert = "ElasticApm:VerifyServerCert";
 		}
 
 		private readonly IConfiguration _configuration;
@@ -88,6 +89,8 @@ namespace Elastic.Apm.AspNetCore.Config
 			ParseTransactionSampleRate(ReadFallBack(Keys.TransactionSampleRate, ConfigConsts.EnvVarNames.TransactionSampleRate));
 
 		public string CaptureBody => ParseCaptureBody(ReadFallBack(Keys.CaptureBody, ConfigConsts.EnvVarNames.CaptureBody));
+
+		public bool VerifyServerCert => ParseVerifyServerCert(ReadFallBack(Keys.VerifyServerCert, ConfigConsts.EnvVarNames.VerifyServerCert));
 
 		public List<string> CaptureBodyContentTypes => ParseCaptureBodyContentTypes(ReadFallBack(Keys.CaptureBodyContentTypes, ConfigConsts.EnvVarNames.CaptureBodyContentTypes), CaptureBody);
 

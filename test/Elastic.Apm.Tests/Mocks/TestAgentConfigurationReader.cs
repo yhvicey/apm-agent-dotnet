@@ -21,6 +21,7 @@ namespace Elastic.Apm.Tests.Mocks
 		private readonly string _stackTraceLimit;
 		private readonly string _spanFramesMinDurationInMilliseconds;
 		private readonly string _captureBodyContentTypes;
+		private readonly string _verifyServerCert;
 
 		public TestAgentConfigurationReader(
 			IApmLogger logger = null,
@@ -35,7 +36,8 @@ namespace Elastic.Apm.Tests.Mocks
 			string captureBody = ConfigConsts.SupportedValues.CaptureBodyOff,
 			string stackTraceLimit = null,
 			string spanFramesMinDurationInMilliseconds = null,
-			string captureBodyContentTypes = ConfigConsts.DefaultValues.CaptureBodyContentTypes
+			string captureBodyContentTypes = ConfigConsts.DefaultValues.CaptureBodyContentTypes,
+			string verifyServerCert = null
 		) : base(logger)
 		{
 			Logger = logger ?? new TestLogger();
@@ -51,6 +53,7 @@ namespace Elastic.Apm.Tests.Mocks
 			_stackTraceLimit = stackTraceLimit;
 			_spanFramesMinDurationInMilliseconds = spanFramesMinDurationInMilliseconds;
 			_captureBodyContentTypes = captureBodyContentTypes;
+			_verifyServerCert = verifyServerCert;
 		}
 
 		public new IApmLogger Logger { get; }
@@ -70,5 +73,7 @@ namespace Elastic.Apm.Tests.Mocks
 			_spanFramesMinDurationInMilliseconds, Origin));
 
 		public List<string> CaptureBodyContentTypes => ParseCaptureBodyContentTypes(Kv(ConfigConsts.EnvVarNames.CaptureBodyContentTypes, _captureBodyContentTypes, Origin), CaptureBody);
+
+		public bool VerifyServerCert => ParseVerifyServerCert(Kv(ConfigConsts.EnvVarNames.VerifyServerCert, _verifyServerCert, Origin));
 	}
 }

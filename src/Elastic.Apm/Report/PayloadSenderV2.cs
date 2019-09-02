@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -58,7 +59,7 @@ namespace Elastic.Apm.Report
 			servicePoint.ConnectionLeaseTimeout = DnsTimeout;
 			servicePoint.ConnectionLimit = 20;
 
-			_httpClient = new HttpClient(handler ?? new HttpClientHandler()) { BaseAddress = serverUrlBase };
+			_httpClient = new HttpClient(handler ?? CreateHttpClientHandler(configurationReader)) { BaseAddress = serverUrlBase };
 			_httpClient.DefaultRequestHeaders.UserAgent.Add(
 				new ProductInfoHeaderValue($"elasticapm-{Consts.AgentName}", AdaptUserAgentValue(_service.Agent.Version)));
 			_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("System.Net.Http",
@@ -90,6 +91,13 @@ namespace Elastic.Apm.Report
 			// https://github.com/dotnet/corefx/blob/e64cac6dcacf996f98f0b3f75fb7ad0c12f588f7/src/System.Net.Http/src/System/Net/Http/HttpRuleParser.cs#L41
 			string AdaptUserAgentValue(string value) => Regex.Replace(value, "[ /()<>@,:;={}?\\[\\]\"\\\\]", "_");
 		}
+
+		private static HttpClientHandler CreateHttpClientHandler(IConfigurationReader configurationReader) =>
+			new HttpClientHandler
+			{
+				ServerCertificateCustomValidationCallback = (message, certificate, chain, policyError) =>
+					policyError == SslPolicyErrors.None || !configurationReader.VerifyServerCert
+			};
 
 		public void QueueTransaction(ITransaction transaction)
 		{

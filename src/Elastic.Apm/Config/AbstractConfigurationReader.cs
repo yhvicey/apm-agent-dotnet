@@ -52,6 +52,13 @@ namespace Elastic.Apm.Config
 			}
 		}
 
+		protected bool ParseVerifyServerCert(ConfigurationKeyValue kv)
+		{
+			if (kv == null || string.IsNullOrEmpty(kv.Value)) return true;
+
+			return !bool.TryParse(kv.Value, out var value) || value;
+		}
+
 		protected string ParseSecretToken(ConfigurationKeyValue kv)
 		{
 			if (kv == null || string.IsNullOrEmpty(kv.Value)) return null;

@@ -24,6 +24,7 @@ namespace Elastic.Apm.Tests
 			public int StackTraceLimit { get; }
 			public double SpanFramesMinDurationInMilliseconds { get; }
 			public List<string> CaptureBodyContentTypes { get; }
+			public bool VerifyServerCert { get; }
 		}
 
 		///<summary>
