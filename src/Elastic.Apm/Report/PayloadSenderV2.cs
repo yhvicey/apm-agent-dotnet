@@ -59,7 +59,7 @@ namespace Elastic.Apm.Report
 			servicePoint.ConnectionLeaseTimeout = DnsTimeout;
 			servicePoint.ConnectionLimit = 20;
 
-			_httpClient = new HttpClient(handler ?? CreateHttpClientHandler(configurationReader)) { BaseAddress = serverUrlBase };
+			_httpClient = new HttpClient(handler ?? CreateHttpClientHandler(configurationReader.VerifyServerCert)) { BaseAddress = serverUrlBase };
 			_httpClient.DefaultRequestHeaders.UserAgent.Add(
 				new ProductInfoHeaderValue($"elasticapm-{Consts.AgentName}", AdaptUserAgentValue(_service.Agent.Version)));
 			_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("System.Net.Http",
@@ -92,11 +92,11 @@ namespace Elastic.Apm.Report
 			string AdaptUserAgentValue(string value) => Regex.Replace(value, "[ /()<>@,:;={}?\\[\\]\"\\\\]", "_");
 		}
 
-		private static HttpClientHandler CreateHttpClientHandler(IConfigurationReader configurationReader) =>
+		private static HttpClientHandler CreateHttpClientHandler(bool verifyServerCert) =>
 			new HttpClientHandler
 			{
 				ServerCertificateCustomValidationCallback = (message, certificate, chain, policyError) =>
-					policyError == SslPolicyErrors.None || !configurationReader.VerifyServerCert
+					policyError == SslPolicyErrors.None || !verifyServerCert
 			};
 
 		public void QueueTransaction(ITransaction transaction)
