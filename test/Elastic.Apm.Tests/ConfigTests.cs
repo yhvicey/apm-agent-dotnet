@@ -536,6 +536,22 @@ namespace Elastic.Apm.Tests
 			return config.MetricsIntervalInMilliseconds;
 		}
 
+		[Fact]
+		public void DefaultVerifyServerCertIsTrue()
+		{
+			var agent = new ApmAgent(new TestAgentComponents(configurationReader: new TestAgentConfigurationReader()));
+			agent.ConfigurationReader.VerifyServerCert.Should().BeTrue();
+		}
+
+		[Theory]
+		[InlineData("false", false)]
+		[InlineData("true", true)]
+		public void SetVerifyServerCert(string configValue, bool expected)
+		{
+			var agent = new ApmAgent(new TestAgentComponents(configurationReader: new TestAgentConfigurationReader(verifyServerCert: configValue)));
+			agent.ConfigurationReader.VerifyServerCert.Should().Be(expected);
+		}
+
 		public void Dispose()
 		{
 			Environment.SetEnvironmentVariable(EnvVarNames.ServerUrls, null);

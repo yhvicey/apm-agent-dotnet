@@ -55,8 +55,8 @@ namespace Elastic.Apm.Config
 		protected bool ParseVerifyServerCert(ConfigurationKeyValue kv)
 		{
 			if (kv == null || string.IsNullOrEmpty(kv.Value)) return DefaultValues.VerifyServerCert;
-
-			return !bool.TryParse(kv.Value, out var value) || value;
+			// ReSharper disable once SimplifyConditionalTernaryExpression
+			return bool.TryParse(kv.Value, out var value) ? value : DefaultValues.VerifyServerCert;
 		}
 
 		protected string ParseSecretToken(ConfigurationKeyValue kv)
