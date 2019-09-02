@@ -23,6 +23,7 @@ namespace Elastic.Apm.Config
 			public static Uri ServerUri => new Uri($"http://localhost:{ApmServerPort}");
 			public const string CaptureBody = SupportedValues.CaptureBodyOff;
 			public const string CaptureBodyContentTypes = "application/x-www-form-urlencoded*, text/*, application/json*, application/xml*";
+			public const bool VerifyServerCert = true;
 		}
 
 		public static class EnvVarNames
