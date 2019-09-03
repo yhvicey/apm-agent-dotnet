@@ -59,7 +59,7 @@ namespace Elastic.Apm.Report
 			servicePoint.ConnectionLeaseTimeout = DnsTimeout;
 			servicePoint.ConnectionLimit = 20;
 
-			_httpClient = new HttpClient(handler ?? CreateHttpClientHandler(configurationReader.VerifyServerCert)) { BaseAddress = serverUrlBase };
+			_httpClient = new HttpClient(handler ?? CreateHttpClientHandler(configurationReader.VerifyServerCert, _logger)) { BaseAddress = serverUrlBase };
 			_httpClient.DefaultRequestHeaders.UserAgent.Add(
 				new ProductInfoHeaderValue($"elasticapm-{Consts.AgentName}", AdaptUserAgentValue(_service.Agent.Version)));
 			_httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("System.Net.Http",
@@ -92,11 +92,17 @@ namespace Elastic.Apm.Report
 			string AdaptUserAgentValue(string value) => Regex.Replace(value, "[ /()<>@,:;={}?\\[\\]\"\\\\]", "_");
 		}
 
-		private static HttpClientHandler CreateHttpClientHandler(bool verifyServerCert) =>
+		private static HttpClientHandler CreateHttpClientHandler(bool verifyServerCert, IApmLogger logger) =>
 			new HttpClientHandler
 			{
 				ServerCertificateCustomValidationCallback = (message, certificate, chain, policyError) =>
-					policyError == SslPolicyErrors.None || !verifyServerCert
+				{
+					if (policyError == SslPolicyErrors.None)
+						return true;
+
+					logger.Trace()?.Log("Certificate validation failed. Policy error {PolicyError}", policyError);
+					return !verifyServerCert;
+				}
 			};
 
 		public void QueueTransaction(ITransaction transaction)
