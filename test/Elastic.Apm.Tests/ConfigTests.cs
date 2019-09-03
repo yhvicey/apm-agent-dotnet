@@ -546,6 +546,7 @@ namespace Elastic.Apm.Tests
 		[Theory]
 		[InlineData("false", false)]
 		[InlineData("true", true)]
+		[InlineData("nonsense value", true)]
 		public void SetVerifyServerCert(string configValue, bool expected)
 		{
 			var agent = new ApmAgent(new TestAgentComponents(configurationReader: new TestAgentConfigurationReader(verifyServerCert: configValue)));
