@@ -138,10 +138,15 @@ namespace Elastic.Apm.AspNetCore
 				if (!transaction.HasCustomName)
 				{
 					//fixup Transaction.Name - e.g. /user/profile/1 -> /user/profile/{id}
-					var routeData = (context.Features[typeof(IRoutingFeature)] as IRoutingFeature)?.RouteData;
-					if (routeData != null)
+#if NETCOREAPP3_0
+					var routeValues = context.Features.Get<IRouteValuesFeature>()?.RouteValues;
+#else
+					// Backward compatibility
+					var routeValues = (context.Features[typeof(IRoutingFeature)] as IRoutingFeature)?.RouteData.Values;
+#endif
+					if (routeValues != null)
 					{
-						var name = GetNameFromRouteContext(routeData.Values);
+						var name = GetNameFromRouteContext(routeValues);
 
 						if (!string.IsNullOrWhiteSpace(name)) transaction.Name = $"{context.Request.Method} {name}";
 					}
